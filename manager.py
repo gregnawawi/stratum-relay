@@ -114,8 +114,9 @@ class Manager():
                             if self.shares:
                                 self.shares.register_job(
                                     jid, self.real_username, diff, False, self.sharenotify)
-                            if jmsg['error'][1]:
-                                return json.dumps(stratum_methods.reconnect()) + '\n'
+                            for err_code in [20, 24, 25]:
+                                if jmsg['error'][0] == err_code:
+                                    self.force_exit = True
                     else:
                         diff = self.jobs[jid][0]
                         self.log.info('share REJECTED for jobid %s, size %s, worker %s' % (
@@ -127,4 +128,5 @@ class Manager():
                                 jid, self.real_username, diff, False, self.sharenotify)
 
             output += json.dumps(jmsg) + '\n'
+            
         return output
