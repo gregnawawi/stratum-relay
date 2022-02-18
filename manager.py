@@ -109,11 +109,13 @@ class Manager():
                             else:
                                 raise Exception
                         except Exception:
-                            self.log.info('share REJECTED for jobid %s, size %s, worker %s, message %s' % (
+                            self.log.info('share REJECTED for jobid %s, size %s, worker %s, error: %s' % (
                                 jid, diff, self.real_username, jmsg['error'][1]))
                             if self.shares:
                                 self.shares.register_job(
                                     jid, self.real_username, diff, False, self.sharenotify)
+                            if 'subscribe' in jmsg['error'][1]:
+                                return json.dumps(stratum_methods.reconnect()) + '\n'
                     else:
                         diff = self.jobs[jid][0]
                         self.log.info('share REJECTED for jobid %s, size %s, worker %s' % (
