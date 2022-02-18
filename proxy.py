@@ -10,7 +10,7 @@ import connection
 READ_ONLY = select.POLLIN | select.POLLPRI | select.POLLHUP | select.POLLERR
 READ_WRITE = READ_ONLY | select.POLLOUT
 TIMEOUT = 80  # 80 seconds
-POOL_ITERATIONS_TIMEOUT = 600  # 60 seconds
+POOL_ITERATIONS_TIMEOUT = 12000  # 20 minutes
 
 
 class ProxyDB(object):
