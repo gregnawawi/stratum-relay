@@ -107,14 +107,10 @@ class Manager():
                                     self.shares.register_job(
                                         jid, self.real_username, diff, True, self.sharenotify)
                             else:
-                                self.log.info('share REJECTED for jobid %s, size %s, worker %s' % (
-                                    jid, diff, self.real_username))
-                                if self.shares:
-                                    self.shares.register_job(
-                                        jid, self.real_username, diff, False, self.sharenotify)
-                        except:
+                                raise Exception
+                        except Exception:
                             self.log.info('share REJECTED for jobid %s, size %s, worker %s, message %s' % (
-                                jid, diff, self.real_username, jmsg))
+                                jid, diff, self.real_username, jmsg['error'][1]))
                             if self.shares:
                                 self.shares.register_job(
                                     jid, self.real_username, diff, False, self.sharenotify)

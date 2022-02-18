@@ -155,17 +155,25 @@ class Proxy(object):
 
                 # Socket is ready to read
                 if flag & (select.POLLIN | select.POLLPRI):
-                    data = s.recv(8196).decode()
-                    if data:
-                        if self.pool is s:
-                            self.log.debug("got msg from pool: %s" % data)
-                            self.miners_broadcast(
-                                self.manager.process(data, is_pool=True))
-                            pool_ack = True
+                    try:
+                        data = s.recv(8196).decode()
+                        if data:
+                            if self.pool is s:
+                                self.log.debug("got msg from pool: %s" % data)
+                                self.miners_broadcast(
+                                    self.manager.process(data, is_pool=True))
+                                pool_ack = True
+                            else:
+                                self.log.debug("got msg from miner: %s" % data)
+                                self.pool_queue.put(self.manager.process(data))
                         else:
-                            self.log.debug("got msg from miner: %s" % data)
-                            self.pool_queue.put(self.manager.process(data))
-                    else:
+                            if self.pool is s and iterations_to_die < 0:
+                                self.log.error("connection with pool lost!")
+                                self.miners_broadcast(self.manager.get_reconnect())
+                                iterations_to_die = 10
+                            else:
+                                raise Exception
+                    except Exception:
                         if self.pool is s and iterations_to_die < 0:
                             self.log.error("connection with pool lost!")
                             self.miners_broadcast(self.manager.get_reconnect())
