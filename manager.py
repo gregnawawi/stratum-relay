@@ -114,7 +114,7 @@ class Manager():
                             if self.shares:
                                 self.shares.register_job(
                                     jid, self.real_username, diff, False, self.sharenotify)
-                            if 'subscribe' in jmsg['error'][1]:
+                            if jmsg['error'][1]:
                                 return json.dumps(stratum_methods.reconnect()) + '\n'
                     else:
                         diff = self.jobs[jid][0]
